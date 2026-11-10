@@ -1,0 +1,106 @@
+{
+  "name": "reading-mode-theme-changer",
+  "displayName": "Reading Mode Theme Changer",
+  "description": "Switch the color theme automatically based on the active tab — e.g. a light theme for Markdown previews, your usual theme everywhere else.",
+  "version": "0.1.0",
+  "publisher": "your-publisher-id",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jimmyahalpara/reading-mode-theme-changer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jimmyahalpara/reading-mode-theme-changer/issues"
+  },
+  "homepage": "https://github.com/jimmyahalpara/reading-mode-theme-changer#readme",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Themes",
+    "Other"
+  ],
+  "keywords": [
+    "theme",
+    "markdown",
+    "preview",
+    "reading",
+    "auto theme"
+  ],
+  "main": "./src/extension.js",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "readingModeTheme.toggle",
+        "title": "Toggle Automatic Theme Switching",
+        "category": "Reading Mode Theme"
+      },
+      {
+        "command": "readingModeTheme.showActiveTab",
+        "title": "Show How the Active Tab Is Matched",
+        "category": "Reading Mode Theme"
+      }
+    ],
+    "configuration": {
+      "title": "Reading Mode Theme Changer",
+      "properties": {
+        "readingModeTheme.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Switch the color theme automatically based on the active tab."
+        },
+        "readingModeTheme.groups": {
+          "type": "array",
+          "default": [],
+          "markdownDescription": "Theme groups, checked in order; the first group with a matching target wins. A target is a glob, optionally followed by `:editor`, `:preview` or `:any` (the default). Globs without a `/` match the file name; globs with a `/` match the path. Example: `*.md:preview`.",
+          "items": {
+            "type": "object",
+            "required": [
+              "theme",
+              "targets"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "A label for this group, shown by the \"Show How the Active Tab Is Matched\" command."
+              },
+              "theme": {
+                "type": "string",
+                "markdownDescription": "The color theme to use: the name shown in the Color Theme picker (the value `workbench.colorTheme` takes)."
+              },
+              "targets": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "markdownDescription": "Patterns such as `*.md:preview`, `**/docs/**`, or `*.{txt,rst}:editor`."
+              },
+              "enabled": {
+                "type": "boolean",
+                "default": true,
+                "description": "Set to false to skip this group without deleting it."
+              }
+            }
+          }
+        },
+        "readingModeTheme.fallbackTheme": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Theme used when no group matches. Leave empty to keep the current theme."
+        },
+        "readingModeTheme.debounceMs": {
+          "type": "number",
+          "default": 400,
+          "minimum": 0,
+          "description": "Wait this many milliseconds after a tab change before switching themes. Avoids flicker when VS Code briefly reports another tab as active."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "test": "node --test"
+  }
+}
