@@ -3,7 +3,7 @@
   "displayName": "Reading Mode Theme Changer",
   "description": "Switch the color theme automatically based on the active tab — e.g. a light theme for Markdown previews, your usual theme everywhere else.",
   "version": "0.1.0",
-  "publisher": "your-publisher-id",
+  "publisher": "jimmyahalpara",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -34,6 +34,17 @@
   "contributes": {
     "commands": [
       {
+        "command": "readingModeTheme.openSettings",
+        "title": "Open Settings",
+        "category": "Reading Mode Theme",
+        "icon": "$(settings-gear)"
+      },
+      {
+        "command": "readingModeTheme.addActiveTabToGroup",
+        "title": "Add Active File Type to a Group…",
+        "category": "Reading Mode Theme"
+      },
+      {
         "command": "readingModeTheme.toggle",
         "title": "Toggle Automatic Theme Switching",
         "category": "Reading Mode Theme"
@@ -50,12 +61,13 @@
         "readingModeTheme.enabled": {
           "type": "boolean",
           "default": true,
-          "description": "Switch the color theme automatically based on the active tab."
+          "description": "Switch the color theme automatically based on the active tab.",
+          "order": 0
         },
         "readingModeTheme.groups": {
           "type": "array",
           "default": [],
-          "markdownDescription": "Theme groups, checked in order; the first group with a matching target wins. A target is a glob, optionally followed by `:editor`, `:preview` or `:any` (the default). Globs without a `/` match the file name; globs with a `/` match the path. Example: `*.md:preview`.",
+          "markdownDescription": "Theme groups, checked top to bottom; the first group with a matching file pattern decides the theme. [Edit groups in the settings panel](command:readingModeTheme.openSettings).\n\nA pattern is a glob, optionally followed by `:editor`, `:preview` or `:any` (the default). Globs without a `/` match the file name; globs with a `/` match the path. Example: `*.md:preview`.",
           "items": {
             "type": "object",
             "required": [
@@ -84,23 +96,48 @@
                 "description": "Set to false to skip this group without deleting it."
               }
             }
-          }
+          },
+          "order": 1
         },
         "readingModeTheme.fallbackTheme": {
           "type": "string",
           "default": "",
-          "markdownDescription": "Theme used when no group matches. Leave empty to keep the current theme."
+          "markdownDescription": "Theme used when no group matches. Leave empty to keep the current theme.",
+          "order": 2
         },
         "readingModeTheme.debounceMs": {
           "type": "number",
           "default": 400,
           "minimum": 0,
-          "description": "Wait this many milliseconds after a tab change before switching themes. Avoids flicker when VS Code briefly reports another tab as active."
+          "description": "Wait this many milliseconds after a tab change before switching themes. Avoids flicker when VS Code briefly reports another tab as active.",
+          "order": 3
+        },
+        "readingModeTheme.showStatusBarItem": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the matched group in the status bar. Click it to open the settings panel.",
+          "order": 4
         }
       }
     }
   },
   "scripts": {
-    "test": "node --test"
+    "test": "node --test",
+    "package": "npx @vscode/vsce package"
+  },
+  "icon": "images/icon.png",
+  "galleryBanner": {
+    "color": "#1e2230",
+    "theme": "dark"
+  },
+  "extensionKind": [
+    "ui",
+    "workspace"
+  ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": true
+    },
+    "virtualWorkspaces": true
   }
 }
