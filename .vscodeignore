@@ -6,3 +6,7 @@ images/icon.svg
 .github/**
 **/*.vsix
 **/.DS_Store
+node_modules/**
+scripts/**
+package-lock.json
+RELEASING.md

@@ -1,0 +1,100 @@
+name: Release
+
+# Every push to main that changes the extension is tested, versioned and published.
+# Pushes that only touch tests, CI or editor config don't produce a release.
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'test/**'
+      - '.github/**'
+      - '.vscode/**'
+      - '.gitignore'
+  workflow_dispatch:
+
+# Never run two releases at once; queue them instead.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0 # tags and history are needed to pick the version and write the changelog
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Check publishing token
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: |
+          if [ -z "$VSCE_PAT" ]; then
+            echo "::error::Repository secret VSCE_PAT is not set. Add a Visual Studio Marketplace token under Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+
+      - name: Pick version and update changelog
+        id: prep
+        run: node scripts/prepare-release.js
+
+      - name: Package
+        if: steps.prep.outputs.release == 'true'
+        run: npx vsce package --no-dependencies -o "reading-mode-theme-changer-${{ steps.prep.outputs.version }}.vsix"
+
+      - name: Publish to Visual Studio Marketplace
+        if: steps.prep.outputs.release == 'true'
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: npx vsce publish --skip-duplicate --packagePath "reading-mode-theme-changer-${{ steps.prep.outputs.version }}.vsix"
+
+      - name: Publish to Open VSX
+        if: steps.prep.outputs.release == 'true'
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+        run: |
+          if [ -z "$OVSX_PAT" ]; then
+            echo "::notice::OVSX_PAT is not set; skipping Open VSX."
+            exit 0
+          fi
+          npx ovsx publish "reading-mode-theme-changer-${{ steps.prep.outputs.version }}.vsix" --skip-duplicate -p "$OVSX_PAT"
+
+      - name: Commit version, tag and push
+        if: steps.prep.outputs.release == 'true'
+        env:
+          TAG: ${{ steps.prep.outputs.tag }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json CHANGELOG.md
+          if ! git diff --cached --quiet; then
+            git commit -m "Release $TAG [skip ci]"
+          fi
+          git pull --rebase origin main
+          git tag -a "$TAG" -m "$TAG"
+          git push origin HEAD:main
+          git push origin "$TAG"
+
+      - name: GitHub release
+        if: steps.prep.outputs.release == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.prep.outputs.tag }}
+          VERSION: ${{ steps.prep.outputs.version }}
+        run: |
+          # Release notes: this version's section of the changelog.
+          awk -v v="$VERSION" '$0 ~ "^## "v"( |$)" {f=1; next} /^## / && f {exit} f' CHANGELOG.md > notes.md
+          gh release create "$TAG" "reading-mode-theme-changer-$VERSION.vsix" --title "$TAG" --notes-file notes.md

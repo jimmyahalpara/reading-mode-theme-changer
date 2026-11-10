@@ -1,0 +1,23 @@
+name: CI
+
+# Checks pull requests: unit tests and a packaging dry run. Publishing happens in release.yml.
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - name: Package
+        run: npx vsce package --no-dependencies -o extension.vsix
