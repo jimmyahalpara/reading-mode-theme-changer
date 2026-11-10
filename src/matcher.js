@@ -104,13 +104,6 @@ function suggestTarget(tabInfo) {
   return `${pattern}:${tabInfo.mode}`;
 }
 
-/** Human-readable description of a target, e.g. "*.md — previews only". */
-function describeTarget(target) {
-  const { pattern, mode } = parseTarget(target);
-  const where = { editor: 'text editors only', preview: 'previews only', any: 'editors and previews' }[mode];
-  return `${pattern} — ${where}`;
-}
-
 module.exports = {
   globToRegExp,
   parseTarget,
@@ -118,5 +111,4 @@ module.exports = {
   resolveTheme,
   basenameFromPreviewLabel,
   suggestTarget,
-  describeTarget,
 };

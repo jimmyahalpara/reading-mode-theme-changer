@@ -6,6 +6,7 @@ const {
   targetMatches,
   resolveTheme,
   basenameFromPreviewLabel,
+  suggestTarget,
 } = require('../src/matcher');
 
 test('globToRegExp: *, ?, **, braces, case-insensitive', () => {
@@ -86,4 +87,22 @@ test('basenameFromPreviewLabel', () => {
   assert.equal(basenameFromPreviewLabel('Preview README.md'), 'README.md');
   assert.equal(basenameFromPreviewLabel('[Preview] README.md'), 'README.md');
   assert.equal(basenameFromPreviewLabel('README.md'), 'README.md');
+});
+
+test('suggestTarget', () => {
+  assert.equal(suggestTarget({ basename: 'README.md', mode: 'preview' }), '*.md:preview');
+  assert.equal(suggestTarget({ basename: 'archive.tar.gz', mode: 'editor' }), '*.gz:editor');
+  assert.equal(suggestTarget({ basename: 'Makefile', mode: 'editor' }), 'Makefile:editor');
+  assert.equal(suggestTarget({ basename: '.gitignore', mode: 'editor' }), '.gitignore:editor');
+  assert.equal(suggestTarget(null), null);
+});
+
+test('suggested targets match the tab they were made from', () => {
+  for (const tab of [
+    { basename: 'README.md', mode: 'preview' },
+    { basename: 'Makefile', mode: 'editor' },
+    { basename: '.gitignore', mode: 'editor' },
+  ]) {
+    assert.ok(targetMatches(tab, suggestTarget(tab)), suggestTarget(tab));
+  }
 });

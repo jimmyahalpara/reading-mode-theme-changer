@@ -1,0 +1,8 @@
+.vscode/**
+.vscode-test/**
+test/**
+images/icon.svg
+.gitignore
+.github/**
+**/*.vsix
+**/.DS_Store
