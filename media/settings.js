@@ -156,7 +156,7 @@
     else if (!isInstalled(group.theme)) problems.push(`"${group.theme}" isn't installed.`);
     if (group.targets.length === 0) problems.push('Add at least one file pattern.');
 
-    const patternInput = h('input', { type: 'text', placeholder: 'e.g. *.md, *.{txt,rst}, docs/**', class: 'grow' });
+    const patternInput = h('input', { type: 'text', placeholder: 'File pattern, e.g. *.ext or folder/**', class: 'grow' });
     const modeSelect = h('select', {}, MODES.map((m) => h('option', { value: m.value }, m.label)));
     modeSelect.value = 'preview';
 
@@ -242,7 +242,7 @@
         ? groups.map(renderGroup)
         : h('div', { class: 'card empty' },
             h('p', {}, 'No groups yet.'),
-            h('p', { class: 'muted' }, 'A group pairs a theme with file patterns, for example a light theme for ', h('code', {}, '*.md'), ' previews.'))
+            h('p', { class: 'muted' }, 'A group pairs a theme with the file patterns it should apply to.'))
     );
   }
 

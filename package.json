@@ -1,7 +1,7 @@
 {
   "name": "reading-mode-theme-changer",
   "displayName": "Reading Mode Theme Changer",
-  "description": "Switch the color theme automatically based on the active tab — e.g. a light theme for Markdown previews, your usual theme everywhere else.",
+  "description": "Switch the color theme automatically based on the active tab, using your own groups of file patterns and themes.",
   "version": "0.1.0",
   "publisher": "jimmyahalpara",
   "license": "MIT",
@@ -22,10 +22,10 @@
   ],
   "keywords": [
     "theme",
-    "markdown",
+    "color theme",
+    "auto theme",
     "preview",
-    "reading",
-    "auto theme"
+    "reading"
   ],
   "main": "./src/extension.js",
   "activationEvents": [
@@ -67,7 +67,7 @@
         "readingModeTheme.groups": {
           "type": "array",
           "default": [],
-          "markdownDescription": "Theme groups, checked top to bottom; the first group with a matching file pattern decides the theme. [Edit groups in the settings panel](command:readingModeTheme.openSettings).\n\nA pattern is a glob, optionally followed by `:editor`, `:preview` or `:any` (the default). Globs without a `/` match the file name; globs with a `/` match the path. Example: `*.md:preview`.",
+          "markdownDescription": "Theme groups, checked top to bottom; the first group with a matching file pattern decides the theme. [Edit groups in the settings panel](command:readingModeTheme.openSettings).\n\nA pattern is a glob, optionally followed by `:editor`, `:preview` or `:any` (the default). Globs without a `/` match the file name; globs with a `/` match the path.",
           "items": {
             "type": "object",
             "required": [
@@ -88,7 +88,7 @@
                 "items": {
                   "type": "string"
                 },
-                "markdownDescription": "Patterns such as `*.md:preview`, `**/docs/**`, or `*.{txt,rst}:editor`."
+                "markdownDescription": "Glob patterns, each optionally followed by `:editor`, `:preview` or `:any`."
               },
               "enabled": {
                 "type": "boolean",

@@ -1,8 +1,8 @@
 # Reading Mode Theme Changer
 
-Switch VS Code's color theme automatically depending on what you're looking at. For example, use a light, paper-like theme while reading Markdown previews and your usual dark theme while writing code.
+Switch VS Code's color theme automatically depending on what you're looking at. You decide which files get which theme.
 
-You pick the themes. The extension ships with no themes and no rules, so nothing changes until you create a group.
+The extension ships with no themes and no rules, so nothing changes until you create a group.
 
 ## How it works
 
@@ -18,10 +18,10 @@ Whenever the active tab changes, groups are checked from top to bottom. The firs
 
 1. Run **Reading Mode Theme: Open Settings** from the Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`), or click the status bar item.
 2. Click **+ New group**, give it a name, and choose a theme.
-3. Add file patterns, for example `*.md` with **Previews only**.
-4. Choose a **fallback theme**: the one you want everywhere else.
+3. Add file patterns, and choose whether each applies to previews, text editors, or both.
+4. Optionally choose a **fallback theme** for tabs that match no group.
 
-That's it: open a Markdown preview and the theme follows.
+Open a matching file and the theme follows.
 
 **Shortcut:** with a file or preview open, run **Reading Mode Theme: Add Active File Type to a Group…** to add its file type to an existing group, or to a new one.
 
